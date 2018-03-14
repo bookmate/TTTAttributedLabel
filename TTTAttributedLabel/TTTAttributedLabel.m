@@ -839,6 +839,22 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                     truncatedLine = CFRetain(truncationToken);
                 }
 
+				CFArrayRef runs = CTLineGetGlyphRuns(truncatedLine);
+				CTRunRef run = CFArrayGetValueAtIndex(runs, 0);
+
+				CFRange runRange = CTRunGetStringRange(run);
+				NSString *truncatedPart = [[truncationString attributedSubstringFromRange:NSMakeRange(runRange.location, runRange.length)] string];
+
+				NSString *lastSymbol = [truncatedPart substringFromIndex: [truncatedPart length] - 1];
+
+				NSUInteger location = [lastSymbol rangeOfCharacterFromSet:NSCharacterSet.punctuationCharacterSet].location;
+				if (location != NSNotFound && [self.attributedTruncationToken.string hasPrefix:@"..."]) {
+					self.attributedTruncationToken = [attributedTruncationString attributedSubstringFromRange:NSMakeRange(1, attributedTruncationString.length - 1)];
+
+					[self drawFramesetter:framesetter attributedString:attributedString textRange:textRange inRect:rect context:c];
+					return;
+				}
+
                 CGFloat penOffset = (CGFloat)CTLineGetPenOffsetForFlush(truncatedLine, flushFactor, rect.size.width);
 				CGFloat textPosY = lineOrigin.y - descent - self.font.descender;
                 CGContextSetTextPosition(c, penOffset, textPosY);
