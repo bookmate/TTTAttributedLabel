@@ -624,7 +624,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     NSEnumerator *enumerator = [self.linkModels reverseObjectEnumerator];
     TTTAttributedLabelLink *link = nil;
     while ((link = [enumerator nextObject])) {
-        if (NSLocationInRange((NSUInteger)idx, link.result.range)) {
+        if (NSLocationInRange((NSUInteger)idx - 1, link.result.range)) {
             return link;
         }
     }
@@ -690,7 +690,7 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
         // Check if the point is within this line vertically
         if (p.y >= yMin) {
             // Check if the point is within this line horizontally
-            if (p.x >= lineOrigin.x && p.x <= lineOrigin.x + width) {
+            if (p.x >= lineOrigin.x && p.x <= self.frame.size.width) {
                 // Convert CT coordinates to line-relative coordinates
                 CGPoint relativePoint = CGPointMake(p.x - lineOrigin.x, p.y - lineOrigin.y);
                 idx = CTLineGetStringIndexForPosition(line, relativePoint);
